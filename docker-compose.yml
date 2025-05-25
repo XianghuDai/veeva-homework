@@ -1,0 +1,56 @@
+version: "3"
+services:
+
+  selenium-hub:
+    image: selenium/hub:4.19.1
+    container_name: selenium-hub
+    # platform: linux/arm64
+    ports:
+      - "4444:4444"
+
+  chrome:
+    image: seleniarm/node-chromium
+    depends_on: [ selenium-hub ]
+    shm_size: 2gb
+    # platform: linux/arm64
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      # - SE_NODE_DISABLE_DEVSHM_USAGE=true
+
+  firefox:
+    image: selenium/node-firefox:4.19.1
+    depends_on: [ selenium-hub ]
+    shm_size: 2gb
+    # platform: linux/arm64
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      # - SE_NODE_DISABLE_DEVSHM_USAGE=true
+
+  edge:
+    image: selenium/node-edge:4.19.1
+    depends_on: [ selenium-hub ]
+    shm_size: 2gb
+    # platform: linux/arm64
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      # - SE_NODE_DISABLE_DEVSHM_USAGE=true
+
+  runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: selenium-runner
+    depends_on:
+      - selenium-hub
+      - chrome
+      - firefox
+      - edge
+    volumes:
+      - ./test-project:/usr/src/app
+    command: sh -c "sleep 10 && mvn compile exec:java"
