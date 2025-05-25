@@ -7,8 +7,14 @@ import org.openqa.selenium.edge.EdgeOptions;
 
 import java.net.URL;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+
 public class CalculatorTest {
     public static void main(String[] args) throws Exception {
+
+        PrintWriter writer = new PrintWriter(new FileWriter("test-results.log", true));
         String[] browsers = { "chrome", "firefox", "MicrosoftEdge" };
 
         for (String browser : browsers) {
@@ -41,17 +47,20 @@ public class CalculatorTest {
                 driver.get("https://www.calculator.net/carbohydrate-calculator.html");
 
                 System.out.println("[" + browser + "] Page Title: " + driver.getTitle());
+                writer.println(LocalDateTime.now() + " - [" + browser + "] Page Title: " + driver.getTitle());
 
                 driver.quit();
 
             } catch (Exception e) {
                 System.err.println("[" + browser + "] Failed to run test: " + e.getMessage());
+                writer.println(LocalDateTime.now() + " - [" + browser + "] Failed to run test: " + e.getMessage());
             } finally {
                 if (driver != null) {
                     driver.quit();
                 }
             }
         }
+        writer.close();
         System.exit(0);
     }
 }
