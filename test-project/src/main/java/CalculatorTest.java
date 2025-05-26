@@ -45,6 +45,7 @@ public class CalculatorTest {
 
             // run tests on multiple scenarios
             runMetricUnitScenario(driver, browser, writer);
+            runUSUnitScenario(driver, browser, writer);
 
         } catch (Exception e) {
             // System.err.println("[" + browser + "] Failed to run test: " +
@@ -140,6 +141,64 @@ public class CalculatorTest {
 
         } catch (Exception e) {
             String error = "[" + browser + "] Failed to run Metric Unit scenario: " + e.getMessage();
+            System.err.println(error);
+            writer.println(" - " + error);
+        }
+    }
+
+    private static void runUSUnitScenario(WebDriver driver, String browser, PrintWriter writer) {
+        try {
+            writer.println("Running US/Unit scenario on " + browser + " at " + LocalDateTime.now());
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            WebElement usLink = wait
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(text(), 'US Units')]")));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", usLink);
+            writer.println("[" + browser + "] Clicked 'US Units' tab");
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("standardheightweight")));
+            writer.println("[" + browser + "] US Form loaded");
+
+            WebElement ageInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("cage")));
+            ageInput.clear();
+            ageInput.sendKeys("35");
+            writer.println("[" + browser + "] Filled in age");
+
+            WebElement maleLabel = driver.findElement(By.cssSelector("label[for='csex1']"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", maleLabel);
+            writer.println("[" + browser + "] Selected gender: male");
+
+            driver.findElement(By.name("cheightfeet")).clear();
+            driver.findElement(By.name("cheightfeet")).sendKeys("5");
+            driver.findElement(By.name("cheightinch")).clear();
+            driver.findElement(By.name("cheightinch")).sendKeys("10");
+            writer.println("[" + browser + "] Filled in height in feet and inches");
+
+            WebElement weightInput = driver.findElement(By.name("cpound"));
+            weightInput.clear();
+            weightInput.sendKeys("180");
+            writer.println("[" + browser + "] Filled in weight in pounds");
+
+            WebElement activityDropdown = driver.findElement(By.name("cactivity"));
+            Select activitySelect = new Select(activityDropdown);
+            activitySelect.selectByIndex(2);
+            // activitySelect.selectByVisibleText("Moderate: exercise 4–5 times/week");
+            writer.println("[" + browser + "] Selected activity level: Moderate");
+
+            WebElement calculateButton = driver.findElement(By.xpath("//input[@value='Calculate']"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", calculateButton);
+            writer.println("[" + browser + "] Clicked 'Calculate' button");
+
+            WebElement result = wait
+                    .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//b[contains(text(), 'grams')]")));
+            String resultText = result.getText();
+            String message = String.format(
+                    "[%s] For 'Weight Maintenance' goal at 40%% carb intake, recommended carbohydrate: %s.",
+                    browser, resultText);
+            System.out.println(message);
+            writer.println(message);
+        } catch (Exception e) {
+            String error = "[" + browser + "] Failed to run US Unit scenario: " + e.getMessage();
             System.err.println(error);
             writer.println(" - " + error);
         }
