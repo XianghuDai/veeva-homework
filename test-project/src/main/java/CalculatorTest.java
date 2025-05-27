@@ -20,12 +20,17 @@ import org.openqa.selenium.support.ui.Select;
 import java.time.Duration;
 
 public class CalculatorTest {
+    /**
+     * Main method to run the tests on multiple browsers and log results to a file.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) throws Exception {
 
         new PrintWriter("test-results.txt").close(); // Clear the file at the start
 
         try (PrintWriter writer = new PrintWriter(new FileWriter("test-results.txt", true))) {
-            String[] browsers = { "chrome", "firefox" };
+            String[] browsers = { "chrome", "firefox", "MicrosoftEdge" };
             for (String browser : browsers) {
                 runOnBrowsers(browser, writer);
             }
@@ -36,6 +41,12 @@ public class CalculatorTest {
         System.exit(0);
     }
 
+    /**
+     * Runs the test scenarios on the specified browser and logs results.
+     *
+     * @param browser the browser to run the tests on
+     * @param writer  PrintWriter to log results
+     */
     public static void runOnBrowsers(String browser, PrintWriter writer) {
         WebDriver driver = null;
         try {
@@ -62,6 +73,13 @@ public class CalculatorTest {
         }
     }
 
+    /**
+     * Initializes the WebDriver for the specified browser.
+     *
+     * @param browser the browser to initialize
+     * @return WebDriver instance for the specified browser
+     * @throws Exception if there is an error initializing the driver
+     */
     private static WebDriver getDriver(String browser) throws Exception {
         DesiredCapabilities caps = new DesiredCapabilities();
         caps.setBrowserName(browser);
@@ -89,6 +107,13 @@ public class CalculatorTest {
         return new RemoteWebDriver(new URL("http://selenium-hub:4444/wd/hub"), caps);
     }
 
+    /**
+     * Runs the Metric Unit scenario and logs results.
+     *
+     * @param driver  WebDriver instance
+     * @param browser the browser being used
+     * @param writer  PrintWriter to log results
+     */
     private static void runMetricUnitScenario(WebDriver driver, String browser, PrintWriter writer) {
         try {
             writer.println("Running Metric Unit scenario on " + browser + " at " + LocalDateTime.now());
@@ -147,6 +172,13 @@ public class CalculatorTest {
         }
     }
 
+    /**
+     * Runs the US Unit scenario and logs results.
+     *
+     * @param driver  WebDriver instance
+     * @param browser the browser being used
+     * @param writer  PrintWriter to log results
+     */
     private static void runUSUnitScenario(WebDriver driver, String browser, PrintWriter writer) {
         try {
             writer.println("Running US/Unit scenario on " + browser + " at " + LocalDateTime.now());
@@ -205,6 +237,13 @@ public class CalculatorTest {
         }
     }
 
+    /**
+     * Runs the Body Fat scenario and logs results.
+     *
+     * @param driver  WebDriver instance
+     * @param browser the browser being used
+     * @param writer  PrintWriter to log results
+     */
     private static void runBodyFatScenario(WebDriver driver, String browser, PrintWriter writer) {
         try {
             writer.println("Running Body Fat scenario on " + browser + " at " + LocalDateTime.now());
